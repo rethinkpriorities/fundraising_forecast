@@ -3,15 +3,13 @@ import random
 import numpy as np
 import pandas as pd
 
+from scipy import stats
 from pprint import pprint
 
 
-N_SCENARIOS = 20000
-MU = 0.15
-SIGMA = 0.35
-OFFSET = 0.85
+N_SCENARIOS = 40000
+CREDIBLE_INTERVAL = 0.8  # 80% chance of donation falling within range
 VERBOSE = False
-raw_data = pd.read_csv('forecast.csv')
 
 
 def parse_currency(currency):
@@ -44,20 +42,22 @@ def parse_percent(percent):
         return 0
 
 
-def lognormal_sample(low, high, mu, sigma, offset):
+def lognormal_sample(low, high, interval):
     if (low > high) or (high < low):
         raise ValueError
     if low == high:
         return low
     else:
-        r = np.random.lognormal(mu, sigma) - offset
-        if r > 1:
-            r = 1
-        if r < 0:
-            r = 0
-        return low * (1 - r) + high * r
+        log_low = np.log(low)
+        log_high = np.log(high)
+        mu = (log_high + log_low) / 2
+        cdf_value = 0.5 + 0.5 * interval
+        normed_sigma = stats.norm.ppf(cdf_value)
+        sigma = (log_high - mu) / normed_sigma
+        return np.random.lognormal(mu, sigma)
 
 
+raw_data = pd.read_csv('forecast.csv')
 raw_data = raw_data[raw_data['Donor'] != 'Current Donors'][raw_data['Donor'] != 'Possible Donors']
 raw_data = raw_data.drop([' 2018 Gift Amount ',
                           ' 2019 Gift Amount ',
@@ -70,12 +70,12 @@ for index, row in raw_data.iterrows():
         y2020_low = parse_currency(row[' 2020 Gift Potential - Low '])
         y2020_high = parse_currency(row[' 2020 Gift Potential - High '])
         y2020_prob = parse_percent(row['2020 Likelihood of Gift'])
-        y2020_logmean = np.mean([lognormal_sample(y2020_low, y2020_high, MU, SIGMA, OFFSET) for _ in range(int(N_SCENARIOS / 10))])
+        y2020_logmean = np.mean([lognormal_sample(y2020_low, y2020_high, CREDIBLE_INTERVAL) for _ in range(int(N_SCENARIOS / 100))])
         y2020_naive_ev = y2020_logmean * y2020_prob
         y2021_low = parse_currency(row[' 2021 Gift Potential - Low '])
         y2021_high = parse_currency(row[' 2021 Gift Potential - High '])
         y2021_prob = parse_percent(row['2021 Likelihood of Gift'])
-        y2021_logmean = np.mean([lognormal_sample(y2021_low, y2021_high, MU, SIGMA, OFFSET) for _ in range(int(N_SCENARIOS / 10))])
+        y2021_logmean = np.mean([lognormal_sample(y2021_low, y2021_high, CREDIBLE_INTERVAL) for _ in range(int(N_SCENARIOS / 100))])
 
         y2021_naive_ev = y2021_logmean * y2021_prob
 
@@ -102,11 +102,12 @@ import pdb
 pdb.set_trace()
 
 for s in range(N_SCENARIOS):
-    if VERBOSE:
-        print('-')
-        print('### SCENARIO {} ###'.format(s + 1))
-    elif s % 100 == 0:
-        print('### SCENARIO {} ###'.format(s + 1))
+    if s % 100 == 0:
+        if VERBOSE:
+            print('-')
+            print('### SCENARIO {} ###'.format(s + 1))
+        else:
+            print('... Completed {}/{}'.format(s + 1, N_SCENARIOS))
     y2020_fundraising_totals = {}
     y2021_fundraising_totals = {}
 
@@ -114,21 +115,21 @@ for s in range(N_SCENARIOS):
         if random.random() <= donation['2020']['prob']:
             y2020_donation = lognormal_sample(low=donation['2020']['low'],
                                               high=donation['2020']['high'],
-                                              mu=MU, sigma=SIGMA, offset=OFFSET)
+                                              interval=CREDIBLE_INTERVAL)
         else:
             y2020_donation = 0
 
         if random.random() <= donation['2021']['prob']:
             y2021_donation = lognormal_sample(low=donation['2021']['low'],
                                               high=donation['2021']['high'],
-                                              mu=MU, sigma=SIGMA, offset=OFFSET)
+                                              interval=CREDIBLE_INTERVAL)
         else:
             y2021_donation = 0
 
         y2020_donation = round_to_nearest(y2020_donation)
         y2021_donation = round_to_nearest(y2021_donation)
 
-        if VERBOSE:
+        if s % 100 == 0 and VERBOSE:
             print('{} gives {} in 2020 and {} in 2021'.format(donor,
                                                               print_money(y2020_donation),
                                                               print_money(y2021_donation)))
@@ -137,7 +138,7 @@ for s in range(N_SCENARIOS):
 
     y2020_total_raised = sum(y2020_fundraising_totals.values())
     y2021_total_raised = sum(y2021_fundraising_totals.values())
-    if VERBOSE:
+    if s % 100 == 0 and VERBOSE:
         print('TOTAL RAISED IN 2020: {}'.format(print_money(y2020_total_raised)))
         print('TOTAL RAISED IN 2021: {}'.format(print_money(y2021_total_raised)))
     y2020_all_scenario_totals.append(y2020_total_raised)
