@@ -8,8 +8,11 @@ from pprint import pprint
 
 
 N_SCENARIOS = 40000
-CREDIBLE_INTERVAL = 0.8  # 80% chance of donation falling within range
-VERBOSE = False
+
+CREDIBLE_INTERVAL = 0.7  # 70% chance of donation falling within range, conditional on giving
+# TODO: Should we jitter the chance of giving as well, to account for correlated errors / make the interval wider?
+
+VERBOSE = False          # Change this to True for scenario-specific output
 
 
 def parse_currency(currency):
