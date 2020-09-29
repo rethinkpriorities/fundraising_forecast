@@ -101,6 +101,12 @@ y2021_all_scenario_totals = []
 import pdb
 pdb.set_trace()
 
+
+pprint([(y[0], y[1]['2021']['naive_ev']) for y in sorted(fundraising_data.items(), key=lambda x: x[1]['2021']['naive_ev'], reverse=True)])
+import pdb
+pdb.set_trace()
+
+
 for s in range(N_SCENARIOS):
     if s % 100 == 0:
         if VERBOSE:
