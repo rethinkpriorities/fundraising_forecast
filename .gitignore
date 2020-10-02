@@ -1,1 +1,4 @@
 forecast.csv
+.ipynb_checkpoints/
+*.ipynb
+*.p
