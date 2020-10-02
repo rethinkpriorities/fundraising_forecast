@@ -113,6 +113,7 @@ y2021_all_scenario_totals = []
 y2020_fundraising_totals = defaultdict(partial(np.array, 0))
 y2021_fundraising_totals = defaultdict(partial(np.array, 0))
 joint_fundraising_totals = defaultdict(partial(np.array, 0))
+absolute_errors = []
 
 for s in range(N_SCENARIOS):
     if s % 100 == 0:
@@ -172,6 +173,7 @@ for s in range(N_SCENARIOS):
 
     y2020_all_scenario_totals.append(y2020_total_raised)
     y2021_all_scenario_totals.append(y2021_total_raised)
+    absolute_errors.append(scenario_absolute_error)
 
 if VERBOSE:
     print('-')
@@ -189,18 +191,20 @@ print('SCENARIO 2021 -- {}'.format(' -- '.join(['{}%: {}'.format(s, print_money(
 print('SCENARIO -- {}'.format(' -- '.join(['{}%: {}'.format(s, print_money(joint_percentiles[i])) for i, s in enumerate(SCENARIO_RANGES)])))
 
 if SAVE:
-    print('... Saving 1/7')
+    print('... Saving 1/8')
     pickle.dump(fundraising_data, open('{}fundraising_data.p'.format(PATH), 'wb'))
-    print('... Saving 2/7')
+    print('... Saving 2/8')
     pickle.dump(y2020_fundraising_totals, open('{}y2020_fundraising_totals.p'.format(PATH), 'wb'))
-    print('... Saving 3/7')
+    print('... Saving 3/8')
     pickle.dump(y2021_fundraising_totals, open('{}y2021_fundraising_totals.p'.format(PATH), 'wb'))
-    print('... Saving 4/7')
+    print('... Saving 4/8')
     pickle.dump(joint_fundraising_totals, open('{}joint_fundraising_totals.p'.format(PATH), 'wb'))
-    print('... Saving 5/7')
+    print('... Saving 5/8')
     pickle.dump(y2020_all_scenario_totals, open('{}y2020_all_scenario_totals.p'.format(PATH), 'wb'))
-    print('... Saving 6/7')
+    print('... Saving 6/8')
     pickle.dump(y2021_all_scenario_totals, open('{}y2021_all_scenario_totals.p'.format(PATH), 'wb'))
-    print('... Saving 7/7')
+    print('... Saving 7/8')
     pickle.dump(joint_scenarios, open('{}joint_scenarios.p'.format(PATH), 'wb'))
+    print('... Saving 8/8')
+    pickle.dump(absolute_errors, open('{}absolute_errors.p'.format(PATH), 'wb'))
 
