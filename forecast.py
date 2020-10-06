@@ -205,7 +205,7 @@ joint_percentiles = np.percentile(joint_scenarios, SCENARIO_RANGES)
 
 print('SCENARIO 2020 -- {}'.format(' -- '.join(['{}%: {}'.format(s, print_money(y2020_percentiles[i])) for i, s in enumerate(SCENARIO_RANGES)])))
 print('SCENARIO 2021 -- {}'.format(' -- '.join(['{}%: {}'.format(s, print_money(y2021_percentiles[i])) for i, s in enumerate(SCENARIO_RANGES)])))
-print('SCENARIO -- {}'.format(' -- '.join(['{}%: {}'.format(s, print_money(joint_percentiles[i])) for i, s in enumerate(SCENARIO_RANGES)])))
+print('SCENARIO 2020+2021 -- {}'.format(' -- '.join(['{}%: {}'.format(s, print_money(joint_percentiles[i])) for i, s in enumerate(SCENARIO_RANGES)])))
 
 if SAVE:
     print('... Saving 1/8')

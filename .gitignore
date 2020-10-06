@@ -2,8 +2,8 @@
 # info and other analysis. So we use .gitignore to ignore all of that so we can
 # still put the raw code under source control.
 
-Makefile
 .ipynb_checkpoints/
 *.ipynb
 *.p
 data/*
+run.py
