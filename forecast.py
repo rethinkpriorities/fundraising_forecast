@@ -21,7 +21,7 @@ error_mean_doc = ('Specify an additional constant error term that is normally di
                   'Set `CONSTANT_ERROR_WIDTH` to 0 to ignore.')
 parser.add_argument('--constant_error_mean',type=float, help=error_mean_doc, default=0)
 parser.add_argument('--constant_error_width', type=float, help='Width of the interval for the constant error term', default=0)
-parser.add_argument('--csv', type=str, help='Define the relative path to the CSV with the donor information', default='forecast.csv')
+parser.add_argument('--csv', type=str, help='Define the relative path to the CSV with the donor information', default='forecast-example.csv')
 parser.add_argument('--path', type=str, help='Define a custom path for the saved model outputs', default='')
 parser.add_argument('--save', type=bool, help='Set to False to not save (overwrite) model outputs', default=True)
 parser.add_argument('--verbose', type=bool, help='Set to True to get scenario-specific output', default=False)
@@ -102,19 +102,19 @@ def lognormal_sample(low, high, interval):
 
 raw_data = pd.read_csv(CSV)
 raw_data = raw_data[raw_data['Donor'] != 'Current Donors'][raw_data['Donor'] != 'Possible Donors']
-raw_data = raw_data.drop([' 2018 Gift Amount ',
-                          ' 2019 Gift Amount ',
-                          ' 2020 Gift Amount ',
-                          ' 2021 Gift Amount '], axis=1)
+raw_data = raw_data.drop(['2018 Gift Amount',
+                          '2019 Gift Amount',
+                          '2020 Gift Amount',
+                          '2021 Gift Amount'], axis=1)
 fundraising_data = {}
 for index, row in raw_data.iterrows():
     donor = row['Donor']
     if donor and isinstance(donor, str):
-        y2020_low = parse_currency(row[' 2020 Gift Potential - Low '])
-        y2020_high = parse_currency(row[' 2020 Gift Potential - High '])
+        y2020_low = parse_currency(row['2020 Gift Potential - Low'])
+        y2020_high = parse_currency(row['2020 Gift Potential - High'])
         y2020_prob = parse_percent(row['2020 Likelihood of Gift'])
-        y2021_low = parse_currency(row[' 2021 Gift Potential - Low '])
-        y2021_high = parse_currency(row[' 2021 Gift Potential - High '])
+        y2021_low = parse_currency(row['2021 Gift Potential - Low'])
+        y2021_high = parse_currency(row['2021 Gift Potential - High'])
         y2021_prob = parse_percent(row['2021 Likelihood of Gift'])
 
         fundraising_data[donor] = {'2020': {'low': y2020_low,

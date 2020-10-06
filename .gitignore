@@ -3,7 +3,7 @@
 # still put the raw code under source control.
 
 Makefile
-forecast.csv
 .ipynb_checkpoints/
 *.ipynb
 *.p
+data/*
