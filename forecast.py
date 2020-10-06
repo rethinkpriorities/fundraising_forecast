@@ -12,15 +12,15 @@ from collections import defaultdict
 
 
 parser = argparse.ArgumentParser(description='Forecast fundraising')
-parser.add_argument('--scenarios', type=int, help='How many Monte Carlo simulations to run?', default=40000)
-parser.add_argument('--interval', type=float, help='Width of the credible interval for the gift, conditional on giving', default=0.8)
+parser.add_argument('--scenarios', type=int, help='How many Monte Carlo simulations to run?', default=10000)
+parser.add_argument('--interval', type=float, help='Width of the credible interval for the gift, conditional on giving', default=0.9)
 # TODO: Should we jitter the chance of giving as well, to account for correlated errors / make the interval wider?
 
 error_mean_doc = ('Specify an additional constant error term that is normally distributed with an interval specified by `CREDIBLE_INTERVAL`,'
                   'a mean specified `CONSTANT_ERROR_MEAN`, and a width of the interval specified by `CONSTANT_ERROR_WIDTH` (width is on both sides of the mean).'
                   'Set `CONSTANT_ERROR_WIDTH` to 0 to ignore.')
-parser.add_argument('--constant_error_mean',type=float, help=error_mean_doc, default=0.8)
-parser.add_argument('--constant_error_width', type=float, help='Width of the interval for the constant error term', default=100000)
+parser.add_argument('--constant_error_mean',type=float, help=error_mean_doc, default=0)
+parser.add_argument('--constant_error_width', type=float, help='Width of the interval for the constant error term', default=0)
 parser.add_argument('--csv', type=str, help='Define the relative path to the CSV with the donor information', default='forecast.csv')
 parser.add_argument('--path', type=str, help='Define a custom path for the saved model outputs', default='')
 parser.add_argument('--save', type=bool, help='Set to False to not save (overwrite) model outputs', default=True)
