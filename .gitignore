@@ -1,3 +1,7 @@
+# Note that this project is used live at Rethink Priorities with sensitive donor
+# info and other analysis. So we use .gitignore to ignore all of that so we can
+# still put the raw code under source control.
+
 forecast.csv
 .ipynb_checkpoints/
 *.ipynb

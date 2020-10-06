@@ -1,5 +1,6 @@
 import pickle
 import random
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -10,22 +11,32 @@ from functools import partial
 from collections import defaultdict
 
 
-N_SCENARIOS = 40000      # How many Monte Carlo simulations to run?
-
-CREDIBLE_INTERVAL = 0.8  # 80% chance of donation falling within range, conditional on giving
+parser = argparse.ArgumentParser(description='Forecast fundraising')
+parser.add_argument('--scenarios', type=int, help='How many Monte Carlo simulations to run?', default=40000)
+parser.add_argument('--interval', type=float, help='Width of the credible interval for the gift, conditional on giving', default=0.8)
 # TODO: Should we jitter the chance of giving as well, to account for correlated errors / make the interval wider?
 
-# Specify an additional constant error term that is normally distributed with an interval specified by `CREDIBLE_INTERVAL`,
-# a mean specified `CONSTANT_ERROR_MEAN`, and a width of the interval specified by `CONSTANT_ERROR_WIDTH` (width is on both sides of the mean).
-# Set `CONSTANT_ERROR_WIDTH` to 0 to ignre.
-CONSTANT_ERROR_MEAN = 0
-CONSTANT_ERROR_WIDTH = 100000
+error_mean_doc = ('Specify an additional constant error term that is normally distributed with an interval specified by `CREDIBLE_INTERVAL`,'
+                  'a mean specified `CONSTANT_ERROR_MEAN`, and a width of the interval specified by `CONSTANT_ERROR_WIDTH` (width is on both sides of the mean).'
+                  'Set `CONSTANT_ERROR_WIDTH` to 0 to ignre.')
+parser.add_argument('--constant_error_mean',type=float, help=error_mean_doc, default=0.8)
+parser.add_argument('--constant_error_width', type=float, help='Width of the interval for the constant error term', default=100000)
+parser.add_argument('--csv', type=str, help='Define the relative path to the CSV with the donor information', default='forecast.csv')
+parser.add_argument('--path', type=str, help='Define a custom path for the saved model outputs', default='')
+parser.add_argument('--save', type=bool, help='Set to False to not save (overwrite) model outputs', default=True)
+parser.add_argument('--verbose', type=bool, help='Set to True to get scenario-specific output', default=False)
+args = parser.parse_args()
+
+N_SCENARIOS = args.scenarios
+CREDIBLE_INTERVAL = args.interval
+CONSTANT_ERROR_MEAN = args.constant_error_mean
+CONSTANT_ERROR_WIDTH = args.constant_error_width
+VERBOSE = args.verbose
+CSV = args.csv
+SAVE = args.save
+PATH = args.path
 
 SCENARIO_RANGES = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]  # Generate printed output for these percentiles
-VERBOSE = False                                                       # Change this to True for scenario-specific outputs
-
-SAVE = True   # Set to False to not save (overwrite) any model outputs
-PATH = ""     # Use this to define a custom path for the saved model outputs
 
 
 def parse_currency(currency):
@@ -89,7 +100,7 @@ def lognormal_sample(low, high, interval):
         return np.random.lognormal(mu, sigma)
 
 
-raw_data = pd.read_csv('forecast.csv')
+raw_data = pd.read_csv(CSV)
 raw_data = raw_data[raw_data['Donor'] != 'Current Donors'][raw_data['Donor'] != 'Possible Donors']
 raw_data = raw_data.drop([' 2018 Gift Amount ',
                           ' 2019 Gift Amount ',
