@@ -40,9 +40,11 @@ SCENARIO_RANGES = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]  # Generate
 
 
 def parse_currency(currency):
+    if isinstance(currency, int) or isinstance(currency, float):
+        return currency
     if currency == ' $ -   ':
         return 0
-    elif isinstance(currency, str):
+    if isinstance(currency, str):
         currency = currency.replace('$', '').replace(' ', '').replace(',', '')
         return float(currency)
     else:
@@ -66,6 +68,8 @@ def round_to_nearest(num):
 
 
 def parse_percent(percent):
+    if isinstance(percent, int) or isinstance(percent, float):
+        return percent
     if isinstance(percent, str):
         return float(percent.replace('%', '')) / 100
     else:
@@ -101,11 +105,10 @@ def lognormal_sample(low, high, interval):
 
 
 raw_data = pd.read_csv(CSV)
+raw_data = raw_data[['Donor', '2020 Gift Potential - Low', '2020 Gift Potential - High',
+                     '2020 Likelihood of Gift', '2021 Gift Potential - Low',
+                     '2021 Gift Potential - High', '2021 Likelihood of Gift']]
 raw_data = raw_data[raw_data['Donor'] != 'Current Donors'][raw_data['Donor'] != 'Possible Donors']
-raw_data = raw_data.drop(['2018 Gift Amount',
-                          '2019 Gift Amount',
-                          '2020 Gift Amount',
-                          '2021 Gift Amount'], axis=1)
 fundraising_data = {}
 for index, row in raw_data.iterrows():
     donor = row['Donor']
