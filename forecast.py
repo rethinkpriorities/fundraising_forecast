@@ -24,6 +24,7 @@ parser.add_argument('--constant_error_width', type=float, help='Width of the int
 parser.add_argument('--csv', type=str, help='Define the relative path to the CSV with the donor information', default='forecast-example.csv')
 parser.add_argument('--path', type=str, help='Define a custom path for the saved model outputs', default='')
 parser.add_argument('--save', type=bool, help='Set to False to not save (overwrite) model outputs', default=True)
+parser.add_argument('--update_every', type=int, help='How many steps to run before updating?', default=1000)
 parser.add_argument('--verbose', type=bool, help='Set to True to get scenario-specific output', default=False)
 args = parser.parse_args()
 
