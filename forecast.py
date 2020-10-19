@@ -136,7 +136,7 @@ joint_fundraising_totals = defaultdict(partial(np.array, 0))
 constant_errors = []
 
 for s in range(N_SCENARIOS):
-    if s % 100 == 0:
+    if s % update_every == 0:
         if VERBOSE:
             print('-')
             print('### SCENARIO {} ###'.format(s + 1))
@@ -164,7 +164,7 @@ for s in range(N_SCENARIOS):
         y2020_donation = round_to_nearest(y2020_donation)
         y2021_donation = round_to_nearest(y2021_donation)
 
-        if s % 100 == 0 and VERBOSE:
+        if s % update_every == 0 and VERBOSE:
             print('{} gives {} in 2020 and {} in 2021'.format(donor,
                                                               print_money(y2020_donation),
                                                               print_money(y2021_donation)))
@@ -184,7 +184,7 @@ for s in range(N_SCENARIOS):
 
     y2021_total_raised = sum(y2021_donations) + scenario_constant_error
 
-    if s % 100 == 0 and VERBOSE:
+    if s % update_every == 0 and VERBOSE:
         print('CONSTANT ERROR TERM: {}'.format(print_money(scenario_constant_error)))
         print('TOTAL RAISED IN 2020: {}'.format(print_money(y2020_total_raised)))
         print('TOTAL RAISED IN 2021: {}'.format(print_money(y2021_total_raised)))
