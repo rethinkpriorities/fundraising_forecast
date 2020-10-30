@@ -36,6 +36,7 @@ VERBOSE = args.verbose
 CSV = args.csv
 SAVE = args.save
 PATH = args.path
+update_every = args.update_every
 
 SCENARIO_RANGES = [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]  # Generate printed output for these percentiles
 
