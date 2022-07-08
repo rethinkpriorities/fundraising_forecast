@@ -177,8 +177,8 @@ for s in range(N_SCENARIOS):
 
     y2021_total_raised = sum(y2021_donations)
     if CONSTANT_ERROR_WIDTH > 0:
-        scenario_constant_error = normal_sample(low=-CONSTANT_ERROR_WIDTH/2.0 - CONSTANT_ERROR_MEAN,
-                                                high=CONSTANT_ERROR_WIDTH/2.0 - CONSTANT_ERROR_MEAN,
+        scenario_constant_error = normal_sample(low=-CONSTANT_ERROR_WIDTH/2.0 + CONSTANT_ERROR_MEAN,
+                                                high=CONSTANT_ERROR_WIDTH/2.0 + CONSTANT_ERROR_MEAN,
                                                 interval=CREDIBLE_INTERVAL)
     else:
         scenario_constant_error = 0
