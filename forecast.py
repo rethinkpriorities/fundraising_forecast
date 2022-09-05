@@ -4,6 +4,7 @@ import argparse
 
 import numpy as np
 import pandas as pd
+import squigglepy as sq
 
 from scipy import stats
 from pprint import pprint
@@ -78,34 +79,6 @@ def parse_percent(percent):
         return 0
 
 
-def normal_sample(low, high, interval):
-    if (low > high) or (high < low):
-        raise ValueError
-    if low == high:
-        return low
-    else:
-        mu = (high + low) / 2
-        cdf_value = 0.5 + 0.5 * interval
-        normed_sigma = stats.norm.ppf(cdf_value)
-        sigma = (high - mu) / normed_sigma
-        return np.random.normal(mu, sigma)
-
-
-def lognormal_sample(low, high, interval):
-    if (low > high) or (high < low):
-        raise ValueError
-    if low == high:
-        return low
-    else:
-        log_low = np.log(low)
-        log_high = np.log(high)
-        mu = (log_high + log_low) / 2
-        cdf_value = 0.5 + 0.5 * interval
-        normed_sigma = stats.norm.ppf(cdf_value)
-        sigma = (log_high - mu) / normed_sigma
-        return np.random.lognormal(mu, sigma)
-
-
 raw_data = pd.read_csv(CSV)
 raw_data = raw_data[['Donor', '2021 Gift Potential - Low', '2021 Gift Potential - High',
                      '2021 Likelihood of Gift', '2022 Gift Potential - Low',
@@ -149,16 +122,16 @@ for s in range(N_SCENARIOS):
 
     for donor, donation in fundraising_data.items():
         if random.random() <= donation['2021']['prob']:
-            y2021_donation = lognormal_sample(low=donation['2021']['low'],
-                                              high=donation['2021']['high'],
-                                              interval=CREDIBLE_INTERVAL)
+            y2021_donation = sq.sample(sq.lognorm(donation['2021']['low'],
+                                                  donation['2021']['high']),
+                                       credibility=CREDIBLE_INTERVAL)
         else:
             y2021_donation = 0
 
         if random.random() <= donation['2022']['prob']:
-            y2022_donation = lognormal_sample(low=donation['2022']['low'],
-                                              high=donation['2022']['high'],
-                                              interval=CREDIBLE_INTERVAL)
+            y2022_donation = sq.sample(sq.lognorm(donation['2022']['low'],
+                                                  donation['2022']['high']),
+                                       credibility=CREDIBLE_INTERVAL)
         else:
             y2022_donation = 0
 
@@ -177,9 +150,9 @@ for s in range(N_SCENARIOS):
 
     y2021_total_raised = sum(y2021_donations)
     if CONSTANT_ERROR_WIDTH > 0:
-        scenario_constant_error = normal_sample(low=-CONSTANT_ERROR_WIDTH/2.0 + CONSTANT_ERROR_MEAN,
-                                                high=CONSTANT_ERROR_WIDTH/2.0 + CONSTANT_ERROR_MEAN,
-                                                interval=CREDIBLE_INTERVAL)
+        scenario_constant_error = sq.sample(sq.norm(-CONSTANT_ERROR_WIDTH/2.0 + CONSTANT_ERROR_MEAN,
+                                                    CONSTANT_ERROR_WIDTH/2.0 + CONSTANT_ERROR_MEAN),
+                                            credibility=CREDIBLE_INTERVAL)
     else:
         scenario_constant_error = 0
 
